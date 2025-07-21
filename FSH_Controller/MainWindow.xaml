@@ -1,0 +1,327 @@
+﻿<Window x:Class="FSH_Controller.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FSH_Controller"
+        mc:Ignorable="d"
+        Title="RS FSH Advanced Controller" Height="800" Width="1000">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Connection Panel -->
+        <GroupBox Header="Connection Settings" Grid.Row="0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Resource Address:" VerticalAlignment="Center" Margin="5"/>
+                <TextBox x:Name="txtResourceAddress" Text="TCPIP::172.17.75.1::INSTR" Grid.Column="1" Margin="5"/>
+                <Button x:Name="btnConnect" Content="Connect" Grid.Column="2" Width="100" Margin="5" Click="btnConnect_Click"/>
+                <Button x:Name="btnCheckRos" Content="Check ROS" Grid.Column="3" Width="100" Margin="5" Click="btnCheckRos_Click"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Configuration Tabs -->
+        <TabControl Grid.Row="1" Margin="0,10">
+            <TabItem Header="Frequency Settings">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Center Frequency:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                    <TextBox x:Name="txtCenterFreq" Text="4.125GHz" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+                    <TextBlock Text="Span:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                    <TextBox x:Name="txtSpan" Text="3.45GHz" Grid.Row="1" Grid.Column="1" Margin="5"/>
+
+                    <TextBlock Text="Sweep Time:" Grid.Row="2" Grid.Column="0" Margin="5"/>
+                    <TextBox x:Name="txtSweepTime" Text="44ms" Grid.Row="2" Grid.Column="1" Margin="5"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Bandwidth Settings">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="RBW:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                    <TextBox x:Name="txtRBW" Text="5MHz" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+                    <TextBlock Text="VBW:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                    <TextBox x:Name="txtVBW" Text="3MHz" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Amplitude Settings">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Reference Level:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                    <TextBox x:Name="txtRefLevel" Text="133.5" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+                    <TextBlock Text="Attenuation:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                    <TextBox x:Name="txtAttenuation" Text="0dB" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Transducer Settings" Visibility="Visible">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Transducer File:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                    <ComboBox x:Name="cmbTransducer" Grid.Row="0" Grid.Column="1" Margin="5">
+                        <ComboBoxItem Content="TSEMF-B2_typical.isotrd"/>
+                        <ComboBoxItem Content="TSEMF-B2_typical_RSEMF26_4823_101850.isotrd" IsSelected="True"/>
+                    </ComboBox>
+                    <CheckBox x:Name="chkTransducerEnabled" Content="Enable" Grid.Row="0" Grid.Column="2" Margin="5" IsChecked="True"/>
+
+                    <!-- Isotropic Antenna Settings -->
+                    <GroupBox Header="Isotropic Antenna" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                        <StackPanel>
+                            <CheckBox x:Name="chkIsotropicAntenna" Content="Enable Isotropic Antenna" Margin="5" Checked="chkIsotropicAntenna_Checked" Unchecked="chkIsotropicAntenna_Unchecked"/>
+
+                            <StackPanel Orientation="Horizontal" Margin="5,0">
+                                <TextBlock Text="Measurement Mode:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                <RadioButton x:Name="rbAuto" Content="AUTO" GroupName="AntennaMode" Margin="5,0" IsChecked="True"/>
+                                <RadioButton x:Name="rbX" Content="X" GroupName="AntennaMode" Margin="5,0"/>
+                                <RadioButton x:Name="rbY" Content="Y" GroupName="AntennaMode" Margin="5,0"/>
+                                <RadioButton x:Name="rbZ" Content="Z" GroupName="AntennaMode" Margin="5,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <TextBlock Text="Detection Mode:" Grid.Row="2" Grid.Column="0" Margin="5"/>
+                    <ComboBox x:Name="cmbDetectionMode" Grid.Row="2" Grid.Column="1" Margin="5">                        
+                        <ComboBoxItem Content="RMS (Default)" Tag="RMS" IsSelected="True"/>
+                        <ComboBoxItem Content="Auto Peak" Tag="APE"/>
+                        <ComboBoxItem Content="Max Peak" Tag="POS"/>
+                        <ComboBoxItem Content="Min Peak" Tag="NEG"/>
+                        <ComboBoxItem Content="Sample" Tag="SAMP"/>
+                    </ComboBox>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Marker Settings" Visibility="Visible">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="0">
+                        <TextBlock Text="Marker 1:" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox x:Name="txtMarker1" Text="2.44175GHz" Width="100" Margin="5"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                        <TextBlock Text="Marker 2:" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox x:Name="txtMarker2" Text="3.5GHz" Width="100" Margin="5"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <TextBlock Text="Marker 3:" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox x:Name="txtMarker3" Text="4.88GHz" Width="100" Margin="5"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="3">
+                        <TextBlock Text="Marker 4:" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox x:Name="txtMarker4" Text="5.25GHz" Width="100" Margin="5"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="4">
+                        <TextBlock Text="Marker 5:" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox x:Name="txtMarker5" Text="5.66GHz" Width="100" Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- New Electric Field Strength Tab -->
+            <TabItem Header="Electric Field Strength" Background="SkyBlue">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="100"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Measurement Information -->
+                    <GroupBox Header="Measurement Details" Grid.Row="0" Grid.ColumnSpan="2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Venue:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                            <TextBox x:Name="txtVenue" Text="t2b.2f" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+                            <TextBlock Text="Test Case:" Grid.Row="0" Grid.Column="2" Margin="5"/>
+                            <TextBox x:Name="txtTestCase" Text="c8" Grid.Row="0" Grid.Column="3" Margin="5"/>
+
+                            <TextBlock Text="Antenna Model:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                            <TextBox x:Name="txtAntennaModel" Text="a001" Grid.Row="1" Grid.Column="1" Margin="5"/>
+
+                            <TextBlock Text="Position:" Grid.Row="1" Grid.Column="2" Margin="5"/>
+                            <TextBox x:Name="txtPosition" Text="grid1" Grid.Row="1" Grid.Column="3" Margin="5"/>
+
+                            <TextBlock Text="Max Hold Time (s):" Grid.Row="2" Grid.Column="0" Margin="5"/>
+                            <TextBox x:Name="txtMaxHoldTime" Text="60" Grid.Row="2" Grid.Column="1" Margin="5"/>
+
+                            <CheckBox x:Name="chkIncludeTimestamp" Content="Include Timestamp" Grid.Row="2" Grid.Column="2" Margin="5" IsChecked="True"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Measurement Type -->
+                    <GroupBox Header="Measurement Type" Grid.Row="1" Grid.ColumnSpan="2">                    
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox x:Name="cmbMeasurementType" Width="120" Margin="5" SelectedIndex="0">
+                                <ComboBoxItem Content="Single"/>
+                                <ComboBoxItem Content="Multiple"/>
+                            </ComboBox>
+
+                            <TextBlock Text="Iterations:" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtIterations" Text="6" Width="50" Margin="5" 
+                                     IsEnabled="True"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- File Saving Options -->
+                    <GroupBox Header="File Saving" Grid.Row="2" Grid.ColumnSpan="2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>                      
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <CheckBox x:Name="chkSaveCSV" Grid.Row="0" Grid.Column="0" Content="Save CSV Data" Margin="5" IsChecked="True"/>
+                            <TextBlock Text="CSV Path:" Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtCsvPath" Text="\USB\Datasets\" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                            
+                            <CheckBox x:Name="chkSavePNG" Grid.Row="0" Grid.Column="1" Content="Save Screenshot" Margin="5" IsChecked="True"/>
+                            <TextBlock Text="PNG Path:" Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtPngPath" Text="\USB\Screen Shots\" Grid.Row="3" Grid.Column="1" Margin="5"/>
+
+                        </Grid>
+
+                    </GroupBox>
+
+                    <!-- Measurement Controls -->
+                    <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button x:Name="btnRunSingle" Content="Run Single" Width="100" Margin="5" Click="btnRunSingle_Click"/>
+                        <Button x:Name="btnRunMultiple" Content="Run Multiple" Width="100" Margin="5" Click="btnRunMultiple_Click"/>
+                        <Button x:Name="btnStopMeasurement" Content="Stop" Width="100" Margin="5" Click="btnStopMeasurement_Click" IsEnabled="False"/>
+                    </StackPanel>
+
+                    <!-- Progress Display -->
+                    <GroupBox Header="Measurement Progress" Grid.Row="4" Grid.ColumnSpan="2">
+                        <StackPanel>
+                            <ProgressBar x:Name="progressMeasurement" Height="20" Margin="5"/>
+                            <TextBlock x:Name="txtProgressStatus" Margin="5" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="txtRemainingTime" Margin="5"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Measurement Log -->
+                    <!--<GroupBox Header="Measurement Log" Grid.Row="5" Grid.ColumnSpan="2" Grid.RowSpan="4">
+                        <TextBox x:Name="txtMeasurementLog" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
+                                 TextWrapping="Wrap" Height="150"/>
+                        
+                        
+                    </GroupBox>-->
+
+                    <DockPanel Margin="5" LastChildFill="True"  Grid.Row="5" Grid.ColumnSpan="2" >
+                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="btnCopyLog" Content="Copy Log" Width="80" Margin="5" Click="btnCopyLog_Click"/>
+                            <Button x:Name="btnSaveLog" Content="Save Log" Width="80" Margin="5" Click="btnSaveLog_Click"/>
+                        </StackPanel>
+                        <TextBox x:Name="txtMeasurementLog" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
+                                 TextWrapping="Wrap" Height="150"/>
+                    </DockPanel>
+
+
+
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!-- Action Buttons -->
+        <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10">
+            <Button x:Name="btnReset" Content="Reset Instrument" Width="120" Margin="5" Click="btnReset_Click"/>
+            <Button x:Name="btnApplySettings" Content="Apply Settings" Width="120" Margin="5" Click="btnApplySettings_Click"/>
+            <Button x:Name="btnSetMarkers" Content="Set Markers" Width="120" Margin="5" Click="btnSetMarkers_Click"/>
+        </StackPanel>
+
+        <!-- Status Area -->
+        <GroupBox Header="Status and Log" Grid.Row="3">
+            <TextBox x:Name="txtStatus" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
+                     TextWrapping="Wrap" Height="150"/>
+        </GroupBox>
+    </Grid>
+</Window>
