@@ -56,7 +56,7 @@ namespace FSH_Controller
             UpdateLogDisplay();
         }
 
-        // Add ROS Connection Checking
+        // 250721 Add ROS Connection Checking
         private void btnCheckRos_Click(object sender, RoutedEventArgs e) //CheckRosStatusViaSocket
         {
             try
