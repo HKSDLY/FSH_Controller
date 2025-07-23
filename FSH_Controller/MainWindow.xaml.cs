@@ -57,6 +57,7 @@ namespace FSH_Controller
         }
 
         // 250721 Add ROS Connection Checking
+        
         private void btnCheckRos_Click(object sender, RoutedEventArgs e) //CheckRosStatusViaSocket
         {
             try
@@ -73,8 +74,19 @@ namespace FSH_Controller
                         return;
                     }
 
+                    client.EndConnect(result);
+
                     using (NetworkStream stream = client.GetStream())
                     {
+                        // Send request first
+                        string request = "STATUS";
+                        byte[] requestData = Encoding.UTF8.GetBytes(request);
+                        stream.Write(requestData, 0, requestData.Length);
+
+                        // Set read timeout
+                        stream.ReadTimeout = 2000; // 2 seconds
+
+                        // Read response
                         byte[] buffer = new byte[1024];
                         int bytesRead = stream.Read(buffer, 0, buffer.Length);
                         string response = Encoding.UTF8.GetString(buffer, 0, bytesRead);
@@ -94,10 +106,68 @@ namespace FSH_Controller
             {
                 Dispatcher.Invoke(() => UpdateStatus($"Network error: {ex.SocketErrorCode}"));
             }
+            catch (IOException ex) when (ex.InnerException is SocketException sex)
+            {
+                Dispatcher.Invoke(() => UpdateStatus($"Network error: {sex.SocketErrorCode}"));
+            }
             catch (Exception ex)
             {
                 Dispatcher.Invoke(() => UpdateStatus($"Error: {ex.Message}"));
             }
+        }
+
+        private void SendMoveCommand(double distance, double velocity)
+        {
+            try
+            {
+                using (TcpClient client = new TcpClient())
+                {
+                    // Connect with 2 second timeout
+                    var result = client.BeginConnect("192.168.0.136", 65432, null, null);
+                    bool success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(2));
+
+                    if (!success)
+                    {
+                        UpdateStatus("Connection timeout");
+                        return;
+                    }
+
+                    client.EndConnect(result);
+
+                    using (NetworkStream stream = client.GetStream())
+                    {
+                        // Set timeouts
+                        stream.WriteTimeout = 2000;
+                        stream.ReadTimeout = 2000;
+
+                        // Send command
+                        string command = $"CMD:MOVE:{distance},{velocity}";
+                        byte[] data = Encoding.UTF8.GetBytes(command);
+                        stream.Write(data, 0, data.Length);
+
+                        // Read response
+                        byte[] buffer = new byte[1024];
+                        int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                        string response = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            UpdateStatus($"Command sent: {command}");
+                            UpdateStatus($"Response: {response}");
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(() => UpdateStatus($"Command error: {ex.Message}"));
+            }
+        }
+
+        private void btnTestMove_Click(object sender, RoutedEventArgs e)
+        {
+            // Example: Move forward 1m at 0.2m/s
+            SendMoveCommand(1.0, 0.2);
         }
 
 
