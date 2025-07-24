@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using Ivi.Visa;
 using NationalInstruments.Visa;
 using System.Net.Sockets; //For ROS Connection
+using System.Reflection;
 
 namespace FSH_Controller
 {
@@ -36,6 +37,11 @@ namespace FSH_Controller
         public MainWindow()
         {
             InitializeComponent();
+
+            // Set window title with version information
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            this.Title = $"RS FSH Advanced Controller v{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+
             UpdateStatus("Application started. Ready to connect.");
             InitializeLogging();
             this.Closed += MainWindow_Closed;
@@ -161,6 +167,101 @@ namespace FSH_Controller
             catch (Exception ex)
             {
                 Dispatcher.Invoke(() => UpdateStatus($"Command error: {ex.Message}"));
+            }
+        }
+
+        // Add MoveForwardControl
+        private void btnMoveForwardCm_Click(object sender, RoutedEventArgs e)
+        {
+            if (double.TryParse(txtFineTuneCm.Text, out double cm))
+            {
+                // Convert cm to m and send positive value
+                SendMoveCommand(cm / 100.0, 0.1); // Using fixed velocity of 0.1 m/s for fine movement
+            }
+            else
+            {
+                UpdateStatus("Invalid fine-tune distance value");
+            }
+        }
+
+        private void btnMoveBackwardCm_Click(object sender, RoutedEventArgs e)
+        {
+            if (double.TryParse(txtFineTuneCm.Text, out double cm))
+            {
+                // Convert cm to m and send negative value
+                SendMoveCommand(-cm / 100.0, 0.1); // Using fixed velocity of 0.1 m/s for fine movement
+            }
+            else
+            {
+                UpdateStatus("Invalid fine-tune distance value");
+            }
+        }
+
+        private void btnMove_Click(object sender, RoutedEventArgs e)
+        {
+            if (double.TryParse(txtMoveDistance.Text, out double distance) &&
+                double.TryParse(txtMoveVelocity.Text, out double velocity))
+            {
+                if (Math.Abs(distance) > 0 && Math.Abs(velocity) > 0)
+                {
+                    SendMoveCommand(distance, velocity);
+                }
+                else
+                {
+                    UpdateStatus("Distance and velocity must be positive values");
+                }
+            }
+            else
+            {
+                UpdateStatus("Invalid distance or velocity value");
+            }
+        }
+
+        private void btnEmergencyStop_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                using (TcpClient client = new TcpClient())
+                {
+                    // Connect with 2 second timeout
+                    var result = client.BeginConnect("192.168.0.136", 65432, null, null);
+                    bool success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromSeconds(2));
+
+                    if (!success)
+                    {
+                        UpdateStatus("Connection timeout");
+                        return;
+                    }
+
+                    client.EndConnect(result);
+
+                    using (NetworkStream stream = client.GetStream())
+                    {
+                        // Set timeouts
+                        stream.WriteTimeout = 2000;
+                        stream.ReadTimeout = 2000;
+
+                        // Send command
+                        string command = "CMD:STOP";
+                        byte[] data = Encoding.UTF8.GetBytes(command);
+                        stream.Write(data, 0, data.Length);
+
+                        // Read response
+                        byte[] buffer = new byte[1024];
+                        int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                        string response = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            UpdateStatus($"Emergency stop sent");
+                            UpdateStatus($"Response: {response}");
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(() => UpdateStatus($"Emergency stop error: {ex.Message}"));
             }
         }
 
