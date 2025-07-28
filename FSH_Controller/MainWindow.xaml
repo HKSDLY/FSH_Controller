@@ -32,7 +32,7 @@
                 <Button x:Name="btnConnect" Content="Connect" Grid.Column="2" Width="100" Margin="5" Click="btnConnect_Click"/>
                 <Button x:Name="btnCheckRos" Content="Check ROS" Grid.Row="1" Grid.Column="0" Width="100" Margin="5" Click="btnCheckRos_Click"/>
                 <Button x:Name="btnTestMove" Content="Test Move" Grid.Row="1" Grid.Column="1" Width="120" Margin="5" HorizontalAlignment="Left" Click="btnTestMove_Click"/>
-                
+
             </Grid>
         </GroupBox>
 
@@ -136,7 +136,7 @@
                     </GroupBox>
 
                     <TextBlock Text="Detection Mode:" Grid.Row="2" Grid.Column="0" Margin="5"/>
-                    <ComboBox x:Name="cmbDetectionMode" Grid.Row="2" Grid.Column="1" Margin="5">                        
+                    <ComboBox x:Name="cmbDetectionMode" Grid.Row="2" Grid.Column="1" Margin="5">
                         <ComboBoxItem Content="RMS (Default)" Tag="RMS" IsSelected="True"/>
                         <ComboBoxItem Content="Auto Peak" Tag="APE"/>
                         <ComboBoxItem Content="Max Peak" Tag="POS"/>
@@ -187,170 +187,170 @@
             <!-- New Electric Field Strength Tab -->
             <TabItem Header="Electric Field Strength" Background="SkyBlue">
                 <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" CanContentScroll="True">
-                <Grid Margin="5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="100"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="100"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                    <!-- Measurement Information -->
-                    <GroupBox Header="Measurement Details" Grid.Row="0" Grid.ColumnSpan="2">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
+                        <!-- Measurement Information -->
+                        <GroupBox Header="Measurement Details" Grid.Row="0" Grid.ColumnSpan="2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
-                            <TextBlock Text="Venue:" Grid.Row="0" Grid.Column="0" Margin="5"/>
-                            <TextBox x:Name="txtVenue" Text="t2b.2f" Grid.Row="0" Grid.Column="1" Margin="5"/>
+                                <TextBlock Text="Venue:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                                <TextBox x:Name="txtVenue" Text="t2b.2f" Grid.Row="0" Grid.Column="1" Margin="5"/>
 
-                            <TextBlock Text="Test Case:" Grid.Row="0" Grid.Column="2" Margin="5"/>
-                            <TextBox x:Name="txtTestCase" Text="c8" Grid.Row="0" Grid.Column="3" Margin="5"/>
+                                <TextBlock Text="Test Case:" Grid.Row="0" Grid.Column="2" Margin="5"/>
+                                <TextBox x:Name="txtTestCase" Text="c8" Grid.Row="0" Grid.Column="3" Margin="5"/>
 
-                            <TextBlock Text="Antenna Model:" Grid.Row="1" Grid.Column="0" Margin="5"/>
-                            <TextBox x:Name="txtAntennaModel" Text="a001" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                                <TextBlock Text="Antenna Model:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                                <TextBox x:Name="txtAntennaModel" Text="a001" Grid.Row="1" Grid.Column="1" Margin="5"/>
 
-                            <TextBlock Text="Position:" Grid.Row="1" Grid.Column="2" Margin="5"/>
-                            <TextBox x:Name="txtPosition" Text="grid1" Grid.Row="1" Grid.Column="3" Margin="5"/>
+                                <TextBlock Text="Position:" Grid.Row="1" Grid.Column="2" Margin="5"/>
+                                <TextBox x:Name="txtPosition" Text="grid1" Grid.Row="1" Grid.Column="3" Margin="5"/>
 
-                            <TextBlock Text="Max Hold Time (s):" Grid.Row="2" Grid.Column="0" Margin="5"/>
-                            <TextBox x:Name="txtMaxHoldTime" Text="60" Grid.Row="2" Grid.Column="1" Margin="5"/>
+                                <TextBlock Text="Max Hold Time (s):" Grid.Row="2" Grid.Column="0" Margin="5"/>
+                                <TextBox x:Name="txtMaxHoldTime" Text="60" Grid.Row="2" Grid.Column="1" Margin="5"/>
 
-                            <CheckBox x:Name="chkIncludeTimestamp" Content="Include Timestamp" Grid.Row="2" Grid.Column="2" Margin="5" IsChecked="True"/>
-                        </Grid>
-                    </GroupBox>
+                                <CheckBox x:Name="chkIncludeTimestamp" Content="Include Timestamp" Grid.Row="2" Grid.Column="2" Margin="5" IsChecked="True"/>
+                            </Grid>
+                        </GroupBox>
 
-                    <!-- Measurement Type -->
-                    <GroupBox Header="Measurement Type" Grid.Row="1" Grid.ColumnSpan="2">                    
-                        <StackPanel Orientation="Horizontal">
-                            <ComboBox x:Name="cmbMeasurementType" Width="120" Margin="5" SelectedIndex="0">
-                                <ComboBoxItem Content="Single"/>
-                                <ComboBoxItem Content="Multiple"/>
-                            </ComboBox>
+                        <!-- Measurement Type -->
+                        <GroupBox Header="Measurement Type" Grid.Row="1" Grid.ColumnSpan="2">
+                            <StackPanel Orientation="Horizontal">
+                                <ComboBox x:Name="cmbMeasurementType" Width="120" Margin="5" SelectedIndex="0">
+                                    <ComboBoxItem Content="Single"/>
+                                    <ComboBoxItem Content="Multiple"/>
+                                </ComboBox>
 
-                            <TextBlock Text="Iterations:" Margin="5,0,0,0" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtIterations" Text="6" Width="50" Margin="5" 
+                                <TextBlock Text="Iterations:" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtIterations" Text="6" Width="50" Margin="5" 
                                      IsEnabled="True"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- File Saving Options -->
+                        <GroupBox Header="File Saving" Grid.Row="2" Grid.ColumnSpan="2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <CheckBox x:Name="chkSaveCSV" Grid.Row="0" Grid.Column="0" Content="Save CSV Data" Margin="5" IsChecked="True"/>
+                                <TextBlock Text="CSV Path:" Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtCsvPath" Text="\USB\Datasets\" Grid.Row="1" Grid.Column="1" Margin="5"/>
+
+                                <CheckBox x:Name="chkSavePNG" Grid.Row="0" Grid.Column="1" Content="Save Screenshot" Margin="5" IsChecked="True"/>
+                                <TextBlock Text="PNG Path:" Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtPngPath" Text="\USB\Screen Shots\" Grid.Row="3" Grid.Column="1" Margin="5"/>
+
+                            </Grid>
+
+                        </GroupBox>
+
+                        <!-- Measurement Controls -->
+                        <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button x:Name="btnRunSingle" Content="Run Single" Width="100" Margin="5" Click="btnRunSingle_Click"/>
+                            <Button x:Name="btnRunMultiple" Content="Run Multiple" Width="100" Margin="5" Click="btnRunMultiple_Click"/>
+                            <Button x:Name="btnStopMeasurement" Content="Stop" Width="100" Margin="5" Click="btnStopMeasurement_Click" IsEnabled="False"/>
                         </StackPanel>
-                    </GroupBox>
 
-                    <!-- File Saving Options -->
-                    <GroupBox Header="File Saving" Grid.Row="2" Grid.ColumnSpan="2">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>                      
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <CheckBox x:Name="chkSaveCSV" Grid.Row="0" Grid.Column="0" Content="Save CSV Data" Margin="5" IsChecked="True"/>
-                            <TextBlock Text="CSV Path:" Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtCsvPath" Text="\USB\Datasets\" Grid.Row="1" Grid.Column="1" Margin="5"/>
-                            
-                            <CheckBox x:Name="chkSavePNG" Grid.Row="0" Grid.Column="1" Content="Save Screenshot" Margin="5" IsChecked="True"/>
-                            <TextBlock Text="PNG Path:" Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtPngPath" Text="\USB\Screen Shots\" Grid.Row="3" Grid.Column="1" Margin="5"/>
+                        <!-- Progress Display -->
+                        <GroupBox Header="Measurement Progress" Grid.Row="4" Grid.ColumnSpan="2">
+                            <StackPanel>
+                                <ProgressBar x:Name="progressMeasurement" Height="20" Margin="5"/>
+                                <TextBlock x:Name="txtProgressStatus" Margin="5" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="txtRemainingTime" Margin="5"/>
+                            </StackPanel>
+                        </GroupBox>
 
-                        </Grid>
-
-                    </GroupBox>
-
-                    <!-- Measurement Controls -->
-                    <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button x:Name="btnRunSingle" Content="Run Single" Width="100" Margin="5" Click="btnRunSingle_Click"/>
-                        <Button x:Name="btnRunMultiple" Content="Run Multiple" Width="100" Margin="5" Click="btnRunMultiple_Click"/>
-                        <Button x:Name="btnStopMeasurement" Content="Stop" Width="100" Margin="5" Click="btnStopMeasurement_Click" IsEnabled="False"/>
-                    </StackPanel>
-
-                    <!-- Progress Display -->
-                    <GroupBox Header="Measurement Progress" Grid.Row="4" Grid.ColumnSpan="2">
-                        <StackPanel>
-                            <ProgressBar x:Name="progressMeasurement" Height="20" Margin="5"/>
-                            <TextBlock x:Name="txtProgressStatus" Margin="5" TextWrapping="Wrap"/>
-                            <TextBlock x:Name="txtRemainingTime" Margin="5"/>
-                        </StackPanel>
-                    </GroupBox>
-
-                    <!-- Measurement Log -->
-                    <!--<GroupBox Header="Measurement Log" Grid.Row="5" Grid.ColumnSpan="2" Grid.RowSpan="4">
+                        <!-- Measurement Log -->
+                        <!--<GroupBox Header="Measurement Log" Grid.Row="5" Grid.ColumnSpan="2" Grid.RowSpan="4">
                         <TextBox x:Name="txtMeasurementLog" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
                                  TextWrapping="Wrap" Height="150"/>
                         
                         
                     </GroupBox>-->
 
-                    <DockPanel Margin="5" LastChildFill="True"  Grid.Row="5" Grid.ColumnSpan="2" >
-                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button x:Name="btnCopyLog" Content="Copy Log" Width="80" Margin="5" Click="btnCopyLog_Click"/>
-                            <Button x:Name="btnSaveLog" Content="Save Log" Width="80" Margin="5" Click="btnSaveLog_Click"/>
-                        </StackPanel>
-                        <TextBox x:Name="txtMeasurementLog" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
-                                 TextWrapping="Wrap" Height="150"/>
-                    </DockPanel>
-
-                    <GroupBox Header="Movement Control" Grid.Row="6" Grid.ColumnSpan="2" Margin="5">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <!-- Fine-Tune Movement -->
-                            <TextBlock Text="Fine-Tune (cm):" Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtFineTuneCm" Text="5" Grid.Row="0" Grid.Column="1" Width="50" Margin="5" HorizontalAlignment="Left"/>
-                            <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
-                                <Button x:Name="btnMoveForwardCm" Content="Forward" Width="80" Margin="5" Click="btnMoveForwardCm_Click"/>
-                                <Button x:Name="btnMoveBackwardCm" Content="Backward" Width="80" Margin="5" Click="btnMoveBackwardCm_Click"/>
+                        <DockPanel Margin="5" LastChildFill="True"  Grid.Row="5" Grid.ColumnSpan="2" >
+                            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button x:Name="btnCopyLog" Content="Copy Log" Width="80" Margin="5" Click="btnCopyLog_Click"/>
+                                <Button x:Name="btnSaveLog" Content="Save Log" Width="80" Margin="5" Click="btnSaveLog_Click"/>
                             </StackPanel>
+                            <TextBox x:Name="txtMeasurementLog" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
+                                 TextWrapping="Wrap" Height="150"/>
+                        </DockPanel>
 
-                            <!-- Distance Movement -->
-                            <TextBlock Text="Distance (m):" Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtMoveDistance" Text="1.0" Grid.Row="1" Grid.Column="1" Width="50" Margin="5" HorizontalAlignment="Left"/>
+                        <GroupBox Header="Movement Control" Grid.Row="6" Grid.ColumnSpan="2" Margin="5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
-                            <TextBlock Text="Velocity (m/s):" Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtMoveVelocity" Text="0.1" Grid.Row="2" Grid.Column="1" Width="50" Margin="5" HorizontalAlignment="Left"/>
+                                <!-- Fine-Tune Movement -->
+                                <TextBlock Text="Fine-Tune (cm):" Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtFineTuneCm" Text="5" Grid.Row="0" Grid.Column="1" Width="50" Margin="5" HorizontalAlignment="Left"/>
+                                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+                                    <Button x:Name="btnMoveForwardCm" Content="Forward" Width="80" Margin="5" Click="btnMoveForwardCm_Click"/>
+                                    <Button x:Name="btnMoveBackwardCm" Content="Backward" Width="80" Margin="5" Click="btnMoveBackwardCm_Click"/>
+                                </StackPanel>
 
-                            <Button x:Name="btnMove" Content="Move" Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Width="80" Margin="5" Click="btnMove_Click"/>
+                                <!-- Distance Movement -->
+                                <TextBlock Text="Distance (m):" Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtMoveDistance" Text="1.0" Grid.Row="1" Grid.Column="1" Width="50" Margin="5" HorizontalAlignment="Left"/>
 
-                            <!-- Emergency Stop -->
-                            <Button x:Name="btnEmergencyStop" Content="EMERGENCY STOP" Grid.Row="3" Grid.ColumnSpan="3" 
+                                <TextBlock Text="Velocity (m/s):" Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtMoveVelocity" Text="0.1" Grid.Row="2" Grid.Column="1" Width="50" Margin="5" HorizontalAlignment="Left"/>
+
+                                <Button x:Name="btnMove" Content="Move" Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Width="80" Margin="5" Click="btnMove_Click"/>
+
+                                <!-- Emergency Stop -->
+                                <Button x:Name="btnEmergencyStop" Content="EMERGENCY STOP" Grid.Row="3" Grid.ColumnSpan="3" 
                 Background="Red" Foreground="White" FontWeight="Bold" Margin="5" Click="btnEmergencyStop_Click"/>
-                        </Grid>
-                    </GroupBox>
+                            </Grid>
+                        </GroupBox>
 
 
 
-                </Grid>
+                    </Grid>
                 </ScrollViewer>
             </TabItem>
         </TabControl>
@@ -369,3 +369,4 @@
         </GroupBox>
     </Grid>
 </Window>
+    

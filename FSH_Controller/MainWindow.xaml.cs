@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,6 +17,7 @@ using Ivi.Visa;
 using NationalInstruments.Visa;
 using System.Net.Sockets; //For ROS Connection
 using System.Reflection;
+using System;
 
 namespace FSH_Controller
 {
@@ -63,7 +63,7 @@ namespace FSH_Controller
         }
 
         // 250721 Add ROS Connection Checking
-        
+
         private void btnCheckRos_Click(object sender, RoutedEventArgs e) //CheckRosStatusViaSocket
         {
             try
@@ -482,7 +482,7 @@ namespace FSH_Controller
                         _fshController.SendCommand("HCOP");
 
                         AddMeasurementLog("File saving in progress (PNG)...");
-                        await Task.Delay(2000); // 2 second delay for PNG save
+                        await Task.Delay(4000); // 2 second delay for PNG save
 
                         AddMeasurementLog($"Screenshot saved: {pngFullPath}");
                     }
@@ -815,7 +815,7 @@ namespace FSH_Controller
                     //_session.RawIO.Write("*OPC?\n");
                     //string response = _session.RawIO.ReadString();
                     //if(response != "1") throw new Exception("Operation failed");
-                    Thread.Sleep(50+950);  // Original delay you had
+                    Thread.Sleep(2000);  // Original delay you had
                     return true;
                 }
                 catch (IOTimeoutException ex)  // Specific timeout exception
