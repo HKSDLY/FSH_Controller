@@ -9,9 +9,9 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="640"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="200"/>
         </Grid.RowDefinitions>
 
         <!-- Connection Panel -->
@@ -21,7 +21,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -186,6 +186,7 @@
 
             <!-- New Electric Field Strength Tab -->
             <TabItem Header="Electric Field Strength" Background="SkyBlue">
+                <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" CanContentScroll="True">
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -350,6 +351,7 @@
 
 
                 </Grid>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
 

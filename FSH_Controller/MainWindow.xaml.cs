@@ -497,7 +497,7 @@ namespace FSH_Controller
                         _fshController.SendCommand($"MMEM:STOR:CSV:STAT 1,'{csvFullPath}'");
 
                         AddMeasurementLog("File saving in progress (CSV)...");
-                        await Task.Delay(2000); // 2 second delay for CSV save
+                        await Task.Delay(4000); // 2 second delay for CSV save
 
                         AddMeasurementLog($"CSV data saved: {csvFullPath}");
                     }
