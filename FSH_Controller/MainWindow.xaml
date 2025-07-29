@@ -229,7 +229,11 @@
                                 <TextBox x:Name="txtAntennaModel" Text="a001" Grid.Row="1" Grid.Column="1" Margin="5"/>
 
                                 <TextBlock Text="Position:" Grid.Row="1" Grid.Column="2" Margin="5"/>
-                                <TextBox x:Name="txtPosition" Text="grid1" Grid.Row="1" Grid.Column="3" Margin="5"/>
+                                <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal">
+                                    <TextBox x:Name="txtPositionPrefix" Text="A" Width="30" Margin="5,5,0,5"/>
+                                    <TextBox x:Name="txtPositionNumber" Text="001" Width="50" Margin="0,5,5,5" 
+             PreviewTextInput="NumberValidationTextBox"/>
+                                </StackPanel>
 
                                 <TextBlock Text="Max Hold Time (s):" Grid.Row="2" Grid.Column="0" Margin="5"/>
                                 <TextBox x:Name="txtMaxHoldTime" Text="60" Grid.Row="2" Grid.Column="1" Margin="5"/>

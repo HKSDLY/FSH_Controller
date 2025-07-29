@@ -18,6 +18,10 @@ using NationalInstruments.Visa;
 using System.Net.Sockets; //For ROS Connection
 using System.Reflection;
 using System;
+using System.Text.RegularExpressions;
+
+
+
 
 namespace FSH_Controller
 {
@@ -42,6 +46,10 @@ namespace FSH_Controller
             var version = Assembly.GetExecutingAssembly().GetName().Version;
             this.Title = $"RS FSH Advanced Controller v{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 
+            // Initialize position number
+            _currentPositionNumber = 1;
+            UpdatePositionText();
+
             UpdateStatus("Application started. Ready to connect.");
             InitializeLogging();
             this.Closed += MainWindow_Closed;
@@ -60,6 +68,43 @@ namespace FSH_Controller
             _measurementLog.AppendLine($"FSH Measurement Log - {DateTime.Now}");
             _measurementLog.AppendLine(new string('=', 40));
             UpdateLogDisplay();
+        }
+
+        // 250728 Add Position Update
+
+        // Field to track current position number
+        private int _currentPositionNumber = 1;
+
+        // Number validation for position number
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        // Format position number with leading zeros
+        private string FormatPositionNumber(int number)
+        {
+            return number.ToString("D3"); // 3-digit format with leading zeros
+        }
+
+        // Update position text
+        private void UpdatePositionText()
+        {
+            txtPositionNumber.Text = FormatPositionNumber(_currentPositionNumber);
+        }
+
+        // Increment position number
+        private void IncrementPositionNumber()
+        {
+            _currentPositionNumber++;
+            UpdatePositionText();
+        }
+
+        // Parse position number from text
+        private bool TryParsePositionNumber(out int number)
+        {
+            return int.TryParse(txtPositionNumber.Text, out number);
         }
 
         // 250721 Add ROS Connection Checking
@@ -403,6 +448,13 @@ namespace FSH_Controller
                 return;
             }
 
+            // Get initial position number
+            if (!TryParsePositionNumber(out _currentPositionNumber))
+            {
+                _currentPositionNumber = 1;
+                UpdatePositionText();
+            }
+
             if (_isMeasurementRunning)
             {
                 AddMeasurementLog("Measurement already in progress");
@@ -420,7 +472,7 @@ namespace FSH_Controller
                 string venue = txtVenue.Text;
                 string testCase = txtTestCase.Text;
                 string antenna = txtAntennaModel.Text;
-                string position = txtPosition.Text;
+                string positionPrefix = txtPositionPrefix.Text;
                 int maxHoldTime = int.Parse(txtMaxHoldTime.Text);
                 bool includeTimestamp = chkIncludeTimestamp.IsChecked == true;
                 bool saveCSV = chkSaveCSV.IsChecked == true;
@@ -437,6 +489,10 @@ namespace FSH_Controller
                 {
                     if (_measurementCancellationToken.IsCancellationRequested)
                         break;
+
+                    // Create full position name (e.g. A001)
+                    string positionNumber = FormatPositionNumber(_currentPositionNumber);
+                    string position = $"{positionPrefix}{positionNumber}";
 
                     AddMeasurementLog($"Starting iteration {i}/{iterations}");
 
@@ -482,7 +538,7 @@ namespace FSH_Controller
                         _fshController.SendCommand("HCOP");
 
                         AddMeasurementLog("File saving in progress (PNG)...");
-                        await Task.Delay(4000); // 2 second delay for PNG save
+                        await Task.Delay(2000); // 2 second delay for PNG save
 
                         AddMeasurementLog($"Screenshot saved: {pngFullPath}");
                     }
@@ -504,6 +560,9 @@ namespace FSH_Controller
 
                     // 5. Reset Trace Mode
                     _fshController.SendCommand("DISP:TRAC1:MODE WRIT");
+
+                    // Increment position number for next iteration
+                    IncrementPositionNumber();
                 }
 
                 progressMeasurement.Value = 100;
@@ -814,9 +873,10 @@ namespace FSH_Controller
                     // Optional: Wait for operation complete
                     //_session.RawIO.Write("*OPC?\n");
                     //string response = _session.RawIO.ReadString();
-                    //if(response != "1") throw new Exception("Operation failed");
+                    //if (response != "1") throw new Exception("Operation failed");
                     Thread.Sleep(2000);  // Original delay you had
                     return true;
+                    
                 }
                 catch (IOTimeoutException ex)  // Specific timeout exception
                 {
