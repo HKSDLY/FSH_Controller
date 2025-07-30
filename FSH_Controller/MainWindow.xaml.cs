@@ -20,6 +20,8 @@ using System.Reflection;
 using System;
 using System.Text.RegularExpressions;
 
+using RohdeSchwarz.RsInstrument;
+
 
 
 
@@ -538,7 +540,7 @@ namespace FSH_Controller
                         _fshController.SendCommand("HCOP");
 
                         AddMeasurementLog("File saving in progress (PNG)...");
-                        await Task.Delay(2000); // 2 second delay for PNG save
+                        //await Task.Delay(2000); // 2 second delay for PNG save
 
                         AddMeasurementLog($"Screenshot saved: {pngFullPath}");
                     }
@@ -553,7 +555,7 @@ namespace FSH_Controller
                         _fshController.SendCommand($"MMEM:STOR:CSV:STAT 1,'{csvFullPath}'");
 
                         AddMeasurementLog("File saving in progress (CSV)...");
-                        await Task.Delay(4000); // 2 second delay for CSV save
+                        //await Task.Delay(4000); // 2 second delay for CSV save
 
                         AddMeasurementLog($"CSV data saved: {csvFullPath}");
                     }
@@ -799,30 +801,38 @@ namespace FSH_Controller
 
     public class FSHController
     {
-        private IMessageBasedSession _session;
+        private RsInstrument _instrument;
         private string _resourceName;
+        private bool _isConnected;
 
         public FSHController(string resourceName)
         {
             _resourceName = resourceName;
+            _isConnected = false;
         }
 
         public bool Connect()
         {
             try
             {
-                var rmSession = new ResourceManager();
-                _session = rmSession.Open(_resourceName) as IMessageBasedSession;
+                if (_isConnected) return true;
 
-                if (_session != null)
-                {
-                    _session.TimeoutMilliseconds = 2000; // 2 second timeout
-                    return true;
-                }
-                return false;
+                _instrument = new RsInstrument(_resourceName);
+
+                // Configure timeouts - adjust these values based on your needs
+                _instrument.VisaTimeout = 10000; // 10 second timeout for VISA operations
+                _instrument.OpcTimeout = 60000; // 60 second timeout for OPC-synchronized operations
+                _instrument.InstrumentStatusChecking = true;
+                _instrument.ClearStatus(); // Clear any pending operations
+
+                // Verify connection by querying IDN
+                var idn = _instrument.Identification.IdnString;
+                _isConnected = true;
+                return true;
             }
-            catch (Exception ex)
+            catch (RsInstrumentException ex)
             {
+                _isConnected = false;
                 throw new Exception($"Connection error: {ex.Message}");
             }
         }
@@ -831,10 +841,10 @@ namespace FSH_Controller
         {
             try
             {
-                if (_session != null)
+                if (_instrument != null && _isConnected)
                 {
-                    _session.Dispose();
-                    _session = null;
+                    _instrument.Dispose();
+                    _isConnected = false;
                 }
             }
             catch (Exception ex)
@@ -843,21 +853,7 @@ namespace FSH_Controller
             }
         }
 
-        //public bool SendCommand(string command)
-        //{
-        //    try
-        //    {
-        //        _session.RawIO.Write(command + "\n");
-        //        Thread.Sleep(50);
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception($"Command error: {ex.Message}");
-        //    }
-        //}
-
-        public bool SendCommand(string command, int maxRetries = 3, int retryDelayMs = 10)
+        public bool SendCommand(string command, bool waitForOpc = true, int maxRetries = 3)
         {
             int attempt = 0;
             bool shouldRetry;
@@ -869,16 +865,19 @@ namespace FSH_Controller
 
                 try
                 {
-                    _session.RawIO.Write(command + "\n");
-                    // Optional: Wait for operation complete
-                    //_session.RawIO.Write("*OPC?\n");
-                    //string response = _session.RawIO.ReadString();
-                    //if (response != "1") throw new Exception("Operation failed");
-                    Thread.Sleep(2000);  // Original delay you had
+                    if (waitForOpc)
+                    {
+                        // Use the built-in OPC synchronization
+                        _instrument.WriteWithOpc(command);
+                    }
+                    else
+                    {
+                        _instrument.Write(command);
+                    }
                     return true;
-                    
                 }
-                catch (IOTimeoutException ex)  // Specific timeout exception
+                catch (RsInstrumentException ex) when (ex.Message.Contains("Timeout") ||
+                                                         ex.Message.Contains("VI_ERROR_TMO"))
                 {
                     if (attempt >= maxRetries)
                     {
@@ -886,8 +885,16 @@ namespace FSH_Controller
                     }
 
                     shouldRetry = true;
-                    _session.Clear();  // Clear device IO buffers
-                    Thread.Sleep(retryDelayMs);  // Short delay before retry
+                    Thread.Sleep(1000 * attempt); // Exponential backoff
+
+                    // Reset connection if needed
+                    if (ex.Message.Contains("Query interrupted") ||
+                        ex.Message.Contains("Timeout") ||
+                        ex.Message.Contains("VI_ERROR_TMO"))
+                    {
+                        Disconnect();
+                        Connect();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -896,9 +903,49 @@ namespace FSH_Controller
 
             } while (shouldRetry && attempt < maxRetries);
 
-            return false;  // Shouldn't reach here due to the throw above
+            return false;
         }
 
+        // Optional: Add query methods if needed
+        public string QueryString(string query, int maxRetries = 3)
+        {
+            int attempt = 0;
+            bool shouldRetry;
 
+            do
+            {
+                shouldRetry = false;
+                attempt++;
+
+                try
+                {
+                    return _instrument.QueryString(query);
+                }
+                catch (RsInstrumentException ex) when (ex.Message.Contains("Timeout") ||
+                                                      ex.Message.Contains("VI_ERROR_TMO"))
+                {
+                    if (attempt >= maxRetries)
+                    {
+                        throw new Exception($"Query failed after {maxRetries} attempts: {ex.Message}");
+                    }
+
+                    shouldRetry = true;
+                    Thread.Sleep(1000 * attempt);
+
+                    if (ex.Message.Contains("Query interrupted"))
+                    {
+                        Disconnect();
+                        Connect();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Query error: {ex.Message}");
+                }
+
+            } while (shouldRetry && attempt < maxRetries);
+
+            return string.Empty;
+        }
     }
 }
