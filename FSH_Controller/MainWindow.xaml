@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FSH_Controller"
         mc:Ignorable="d"
-        Title="RS FSH Advanced Controller" Height="800" Width="1000">
+        Title="RS FSH Advanced Controller" Height="1100" Width="1000">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -92,7 +92,7 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Text="Reference Level:" Grid.Row="0" Grid.Column="0" Margin="5"/>
-                    <TextBox x:Name="txtRefLevel" Text="133.5" Grid.Row="0" Grid.Column="1" Margin="5"/>
+                    <TextBox x:Name="txtRefLevel" Text="122.7" Grid.Row="0" Grid.Column="1" Margin="5"/>
 
                     <TextBlock Text="Attenuation:" Grid.Row="1" Grid.Column="0" Margin="5"/>
                     <TextBox x:Name="txtAttenuation" Text="0dB" Grid.Row="1" Grid.Column="1" Margin="5"/>
@@ -116,7 +116,8 @@
                     <TextBlock Text="Transducer File:" Grid.Row="0" Grid.Column="0" Margin="5"/>
                     <ComboBox x:Name="cmbTransducer" Grid.Row="0" Grid.Column="1" Margin="5">
                         <ComboBoxItem Content="TSEMF-B2_typical.isotrd"/>
-                        <ComboBoxItem Content="TSEMF-B2_typical_RSEMF26_4823_101850.isotrd" IsSelected="True"/>
+                        <ComboBoxItem Content="TSEMF-B2_typical_RSEMF26_4823_101850.isotrd"/>
+                        <ComboBoxItem Content="HE400A-UWB.pritrd" IsSelected="True"/>
                     </ComboBox>
                     <CheckBox x:Name="chkTransducerEnabled" Content="Enable" Grid.Row="0" Grid.Column="2" Margin="5" IsChecked="True"/>
 
@@ -226,7 +227,7 @@
                                 <TextBox x:Name="txtTestCase" Text="c8" Grid.Row="0" Grid.Column="3" Margin="5"/>
 
                                 <TextBlock Text="Antenna Model:" Grid.Row="1" Grid.Column="0" Margin="5"/>
-                                <TextBox x:Name="txtAntennaModel" Text="a001" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                                <TextBox x:Name="txtAntennaModel" Text="HE400-UWB" Grid.Row="1" Grid.Column="1" Margin="5"/>
 
                                 <TextBlock Text="Position:" Grid.Row="1" Grid.Column="2" Margin="5"/>
                                 <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal">
@@ -238,7 +239,7 @@
                                 <TextBlock Text="Max Hold Time (s):" Grid.Row="2" Grid.Column="0" Margin="5"/>
                                 <TextBox x:Name="txtMaxHoldTime" Text="60" Grid.Row="2" Grid.Column="1" Margin="5"/>
 
-                                <CheckBox x:Name="chkIncludeTimestamp" Content="Include Timestamp" Grid.Row="2" Grid.Column="2" Margin="5" IsChecked="True"/>
+                                <CheckBox x:Name="chkIncludeTimestamp" Content="Include Timestamp" Grid.Row="2" Grid.Column="2" Margin="5" IsChecked="False"/>
                             </Grid>
                         </GroupBox>
 
@@ -272,16 +273,16 @@
                                 </Grid.RowDefinitions>
                                 <CheckBox x:Name="chkSaveCSV" Grid.Row="0" Grid.Column="0" Content="Save CSV Data" Margin="5" IsChecked="True"/>
                                 <TextBlock Text="CSV Path:" Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
-                                <TextBox x:Name="txtCsvPath" Text="\USB\Datasets\" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                                <TextBox x:Name="txtCsvPath" Text="\Public\Datasets\" Grid.Row="1" Grid.Column="1" Margin="5"/>
 
                                 <CheckBox x:Name="chkSavePNG" Grid.Row="0" Grid.Column="1" Content="Save Screenshot" Margin="5" IsChecked="True"/>
                                 <TextBlock Text="PNG Path:" Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
-                                <TextBox x:Name="txtPngPath" Text="\USB\Screen Shots\" Grid.Row="3" Grid.Column="1" Margin="5"/>
+                                <TextBox x:Name="txtPngPath" Text="\Public\Screen Shots\" Grid.Row="3" Grid.Column="1" Margin="5"/>
 
                             </Grid>
 
                         </GroupBox>
-
+                                      
                         <!-- Measurement Controls -->
                         <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button x:Name="btnRunSingle" Content="Run Single" Width="100" Margin="5" Click="btnRunSingle_Click"/>
@@ -357,8 +358,160 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-        </TabControl>
 
+            <!-- New ARUP Tab -->
+            <TabItem Header="ARUP" Background="LightGreen">
+                <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" CanContentScroll="True">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Measurement Information -->
+                        <GroupBox Header="Measurement Details" Grid.Row="0" Grid.ColumnSpan="2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Venue:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                                <TextBox x:Name="txtArupVenue" Text="t2b.2f" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+                                <TextBlock Text="Test Case:" Grid.Row="0" Grid.Column="2" Margin="5"/>
+                                <TextBox x:Name="txtArupTestCase" Text="c8" Grid.Row="0" Grid.Column="3" Margin="5"/>
+
+                                <TextBlock Text="Antenna Model:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                                <TextBox x:Name="txtArupAntennaModel" Text="HE400-UWB" Grid.Row="1" Grid.Column="1" Margin="5"/>
+
+                                <TextBlock Text="Position:" Grid.Row="1" Grid.Column="2" Margin="5"/>
+                                <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal">
+                                    <TextBox x:Name="txtArupPositionPrefix" Text="A" Width="30" Margin="5,5,0,5"/>
+                                    <TextBox x:Name="txtArupPositionNumber" Text="001" Width="50" Margin="0,5,5,5" 
+                                             PreviewTextInput="NumberValidationTextBox"/>
+                                </StackPanel>
+
+                                <CheckBox x:Name="chkArupIncludeTimestamp" Content="Include Timestamp" Grid.Row="2" Grid.Column="2" Margin="5" IsChecked="False"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- File Saving Options -->
+                        <GroupBox Header="File Saving" Grid.Row="1" Grid.ColumnSpan="2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="CSV Path:" Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                                <ComboBox x:Name="cmbArupCsvPath" Grid.Row="0" Grid.Column="1" Margin="5" IsEditable="True">
+                                    <ComboBoxItem Content="\Public\Datasets\" IsSelected="True"/>
+                                    <ComboBoxItem Content="\USB\Datasets\" />
+                                </ComboBox>
+
+                                <TextBlock Text="PNG Path:" Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                                <ComboBox x:Name="cmbArupPngPath" Grid.Row="1" Grid.Column="1" Margin="5" IsEditable="True">
+                                    <ComboBoxItem Content="\Public\Screen Shots\" IsSelected="True"/>
+                                    <ComboBoxItem Content="\USB\Screen Shots\" />
+                                </ComboBox>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Measurement Controls -->
+                        <GroupBox Header="Measurement Controls" Grid.Row="2" Grid.ColumnSpan="2">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button x:Name="btnStartBackground" Content="(1) Start Background" Width="140" Margin="5" Click="btnStartBackground_Click"/>
+                                <Button x:Name="btnBackgroundComplete" Content="Background Complete" Width="140" Margin="5" Click="btnBackgroundComplete_Click" IsEnabled="False"/>
+                                <Button x:Name="btnStartSignal" Content="(2) Start Signal" Width="140" Margin="5" Click="btnStartSignal_Click" IsEnabled="False"/>
+                                <Button x:Name="btnSignalComplete" Content="Signal Complete" Width="140" Margin="5" Click="btnSignalComplete_Click" IsEnabled="False"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Measurement Timer Display -->
+                        <GroupBox Header="Measurement Time" Grid.Row="3" Grid.ColumnSpan="2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="txtBackgroundTime" Text="Background: --:--" Grid.Column="0" Margin="5" FontWeight="Bold"/>
+                                <TextBlock x:Name="txtSignalTime" Text="Signal: --:--" Grid.Column="1" Margin="5" FontWeight="Bold"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Measurement Log -->
+                        <DockPanel Margin="5" LastChildFill="True" Grid.Row="4" Grid.ColumnSpan="2">
+                            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button x:Name="btnArupCopyLog" Content="Copy Log" Width="80" Margin="5" Click="btnArupCopyLog_Click"/>
+                                <Button x:Name="btnArupSaveLog" Content="Save Log" Width="80" Margin="5" Click="btnArupSaveLog_Click"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtArupMeasurementLog" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
+                                     TextWrapping="Wrap" Height="150"/>
+                        </DockPanel>
+
+                        <!-- Movement Control -->
+                        <GroupBox Header="Movement Control" Grid.Row="5" Grid.ColumnSpan="2" Margin="5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Fine-Tune Movement -->
+                                <TextBlock Text="Fine-Tune (cm):" Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtArupFineTuneCm" Text="5" Grid.Row="0" Grid.Column="1" Width="50" Margin="5" HorizontalAlignment="Left"/>
+                                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+                                    <Button x:Name="btnArupMoveForwardCm" Content="Forward" Width="80" Margin="5" Click="btnMoveForwardCm_Click"/>
+                                    <Button x:Name="btnArupMoveBackwardCm" Content="Backward" Width="80" Margin="5" Click="btnMoveBackwardCm_Click"/>
+                                </StackPanel>
+
+                                <!-- Distance Movement -->
+                                <TextBlock Text="Distance (m):" Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtArupMoveDistance" Text="1.0" Grid.Row="1" Grid.Column="1" Width="50" Margin="5" HorizontalAlignment="Left"/>
+
+                                <TextBlock Text="Velocity (m/s):" Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtArupMoveVelocity" Text="0.1" Grid.Row="2" Grid.Column="1" Width="50" Margin="5" HorizontalAlignment="Left"/>
+
+                                <Button x:Name="btnArupMove" Content="Move" Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Width="80" Margin="5" Click="btnMove_Click"/>
+
+                                <!-- Emergency Stop -->
+                                <Button x:Name="btnArupEmergencyStop" Content="EMERGENCY STOP" Grid.Row="3" Grid.ColumnSpan="3" 
+                                        Background="Red" Foreground="White" FontWeight="Bold" Margin="5" Click="btnEmergencyStop_Click"/>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+                                       
         <!-- Action Buttons -->
         <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10">
             <Button x:Name="btnReset" Content="Reset Instrument" Width="120" Margin="5" Click="btnReset_Click"/>

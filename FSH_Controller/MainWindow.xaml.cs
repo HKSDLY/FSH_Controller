@@ -37,8 +37,16 @@ namespace FSH_Controller
 
         private string _logFilePath;
         private StringBuilder _measurementLog = new StringBuilder();
+        private StringBuilder _arupMeasurementLog = new StringBuilder(); //251014 Update Arup Log
         private const string LogDirectory = "MeasurementLogs";
         private const string LogFilePrefix = "FSH_Log_";
+
+        // ARUP Measurement fields
+        private DateTime _arupBackgroundStartTime;
+        private DateTime _arupSignalStartTime;
+        private bool _isArupBackgroundRunning = false;
+        private bool _isArupSignalRunning = false;
+        private System.Windows.Threading.DispatcherTimer _arupTimer;
 
         public MainWindow()
         {
@@ -52,11 +60,342 @@ namespace FSH_Controller
             _currentPositionNumber = 1;
             UpdatePositionText();
 
+            // Initialize ARUP timer
+            InitializeArupTimer();
+
             UpdateStatus("Application started. Ready to connect.");
             InitializeLogging();
             this.Closed += MainWindow_Closed;
         }
 
+        //251014 Update ARUP Tab (Start)
+        private void InitializeArupTimer()
+        {
+            _arupTimer = new System.Windows.Threading.DispatcherTimer();
+            _arupTimer.Interval = TimeSpan.FromMilliseconds(100);
+            _arupTimer.Tick += ArupTimer_Tick;
+        }
+
+        private void ArupTimer_Tick(object sender, EventArgs e)
+        {
+            if (_isArupBackgroundRunning)
+            {
+                var elapsed = DateTime.Now - _arupBackgroundStartTime;
+                txtBackgroundTime.Text = $"Background: {elapsed:mm\\:ss}";
+            }
+
+            if (_isArupSignalRunning)
+            {
+                var elapsed = DateTime.Now - _arupSignalStartTime;
+                txtSignalTime.Text = $"Signal: {elapsed:mm\\:ss}";
+            }
+        }
+
+        private void AddArupLogEntry(string message)
+        {
+            string timestampedMessage = $"{DateTime.Now:HH:mm:ss} - {message}";
+
+            // Add to StringBuilder for auto-saving
+            _arupMeasurementLog.AppendLine(timestampedMessage);
+
+            Dispatcher.Invoke(() =>
+            {
+                txtArupMeasurementLog.AppendText(timestampedMessage + Environment.NewLine);
+                txtArupMeasurementLog.ScrollToEnd();
+            });
+        }
+
+        private void SetMemoryTrace()
+        {
+            if (!_isConnected) return;
+
+            try
+            {
+                _fshController.SendCommand($"DISP:TRAC:MEM ON");
+                _fshController.SendCommand($"CALC:MATH:COPY:MEM");
+                AddArupLogEntry("Memory trace set and displayed");
+            }
+            catch (Exception ex)
+            {
+                AddArupLogEntry($"Error setting memory trace: {ex.Message}");
+            }
+        }
+
+        private void btnStartBackground_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_isConnected)
+            {
+                AddArupLogEntry("Not connected to FSH");
+                return;
+            }
+
+            try
+            {
+                // 1. Set Trace Mode to Clear/Write
+                _fshController.SendCommand("DISP:TRAC1:MODE WRIT");
+                AddArupLogEntry("Trace mode set to Clear/Write");
+
+                // 2. Set to Max Hold
+                _fshController.SendCommand("DISP:TRAC1:MODE MAXH");
+                AddArupLogEntry("Trace mode set to Max Hold for background measurement");
+
+                // Start timer
+                _arupBackgroundStartTime = DateTime.Now;
+                _isArupBackgroundRunning = true;
+                _arupTimer.Start();
+
+                // Update UI
+                btnStartBackground.IsEnabled = false;
+                btnBackgroundComplete.IsEnabled = true;
+                btnStartSignal.IsEnabled = false;
+                btnSignalComplete.IsEnabled = false;
+
+                AddArupLogEntry("Background measurement started - click 'Background Complete' when done");
+            }
+            catch (Exception ex)
+            {
+                AddArupLogEntry($"Error starting background measurement: {ex.Message}");
+            }
+        }
+
+        private void btnBackgroundComplete_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_isArupBackgroundRunning) return;
+
+            try
+            {
+                // Show confirmation dialog
+                var result = MessageBox.Show(
+                    "Are you sure you want to complete the background measurement?\n\n" +
+                    $"Current background time: {DateTime.Now - _arupBackgroundStartTime:mm\\:ss}\n\n" +
+                    "Click 'Yes' to save background data and proceed to signal measurement.\n" +
+                    "Click 'No' to continue background measurement.",
+                    "Confirm Background Completion",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.No)
+                {
+                    AddArupLogEntry("Background measurement continued - user selected 'No'");
+                    return;
+                }
+
+                // User clicked Yes - proceed with background completion
+                // Stop background timer
+                _isArupBackgroundRunning = false;
+                var backgroundTime = DateTime.Now - _arupBackgroundStartTime;
+                AddArupLogEntry($"Background measurement completed - Time: {backgroundTime:mm\\:ss}");
+
+                // Update UI to show we're saving data
+                btnBackgroundComplete.IsEnabled = false;
+                btnBackgroundComplete.Content = "Saving...";
+
+                // Save background data
+                //await Task.Run(() => SaveArupBackgroundData());
+                SaveArupBackgroundData();
+
+                // Set memory trace
+                SetMemoryTrace();
+
+                // Update UI
+                btnBackgroundComplete.Content = "Background Complete";
+                btnStartSignal.IsEnabled = true;
+
+                AddArupLogEntry("Background data saved and memory trace set. Ready for signal measurement.");
+
+                // SIMPLE AUTO-CLICK: Start signal measurement automatically
+                btnStartSignal_Click(null, null);
+            }
+            catch (Exception ex)
+            {
+                AddArupLogEntry($"Error completing background measurement: {ex.Message}");
+                // Reset UI in case of error
+                btnBackgroundComplete.IsEnabled = true;
+                btnBackgroundComplete.Content = "Background Complete";
+            }
+        }
+
+        private void btnStartSignal_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_isConnected)
+            {
+                AddArupLogEntry("Not connected to FSH");
+                return;
+            }
+
+            try
+            {
+                // Start signal measurement timer
+                _arupSignalStartTime = DateTime.Now;
+                _isArupSignalRunning = true;
+
+                // Update UI
+                btnStartSignal.IsEnabled = false;
+                btnSignalComplete.IsEnabled = true;
+
+                AddArupLogEntry("Signal measurement started - click 'Signal Complete' when done");
+            }
+            catch (Exception ex)
+            {
+                AddArupLogEntry($"Error starting signal measurement: {ex.Message}");
+            }
+        }
+
+        private void btnSignalComplete_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_isArupSignalRunning) return;
+
+            try
+            {
+                // Stop signal timer
+                _isArupSignalRunning = false;
+                var signalTime = DateTime.Now - _arupSignalStartTime;
+                AddArupLogEntry($"Signal measurement completed - Time: {signalTime:mm\\:ss}");
+
+                // Save signal data
+                SaveArupSignalData();
+
+                // Update UI
+                btnSignalComplete.IsEnabled = false;
+                btnStartBackground.IsEnabled = true;
+
+                // Increment position for next measurement
+                IncrementArupPositionNumber();
+
+                AddArupLogEntry("Signal data saved. Ready for next measurement.");
+            }
+            catch (Exception ex)
+            {
+                AddArupLogEntry($"Error completing signal measurement: {ex.Message}");
+            }
+        }
+
+        private void SaveArupBackgroundData()
+        {
+            try
+            {
+                string venue = txtArupVenue.Text;
+                string testCase = txtArupTestCase.Text;
+                string antenna = txtArupAntennaModel.Text;
+                string positionPrefix = txtArupPositionPrefix.Text;
+                string positionNumber = txtArupPositionNumber.Text;
+                bool includeTimestamp = chkArupIncludeTimestamp.IsChecked == true;
+
+                string position = $"{positionPrefix}{positionNumber}";
+                string timestamp = includeTimestamp ? "_" + DateTime.Now.ToString("ddMMyy_HHmmss") : "";
+
+                // Background filename with "b" suffix
+                string baseName = $"{venue}.{testCase}.{antenna}.{position}.b{timestamp}";
+                string csvFileName = $"Dataset_{baseName}.csv";
+
+
+                // Get selected CSV path from ComboBox
+                string csvBasePath = (cmbArupCsvPath.SelectedItem as ComboBoxItem)?.Content.ToString()
+                                    ?? cmbArupCsvPath.Text;
+                csvBasePath = csvBasePath.TrimEnd('\\') + "\\";
+
+                string csvFullPath = $"{csvBasePath}{csvFileName}";
+
+                AddArupLogEntry("Saving background CSV data...");
+                _fshController.SendCommand($"MMEM:STOR:CSV:STAT 1,'{csvFullPath}'");
+                AddArupLogEntry($"Background CSV data saved: {csvFullPath}");
+            }
+            catch (Exception ex)
+            {
+                AddArupLogEntry($"Error saving background data: {ex.Message}");
+            }
+        }
+
+        private void SaveArupSignalData()
+        {
+            try
+            {
+                string venue = txtArupVenue.Text;
+                string testCase = txtArupTestCase.Text;
+                string antenna = txtArupAntennaModel.Text;
+                string positionPrefix = txtArupPositionPrefix.Text;
+                string positionNumber = txtArupPositionNumber.Text;
+                bool includeTimestamp = chkArupIncludeTimestamp.IsChecked == true;
+
+                string position = $"{positionPrefix}{positionNumber}";
+                string timestamp = includeTimestamp ? "_" + DateTime.Now.ToString("ddMMyy_HHmmss") : "";
+
+                // Signal filename (no "b" suffix)
+                string baseName = $"{venue}.{testCase}.{antenna}.{position}{timestamp}";
+
+                // Get selected CSV path from ComboBox
+                string csvBasePath = (cmbArupCsvPath.SelectedItem as ComboBoxItem)?.Content.ToString()
+                                    ?? cmbArupCsvPath.Text;
+                csvBasePath = csvBasePath.TrimEnd('\\') + "\\";
+                string pngBasePath = (cmbArupPngPath.SelectedItem as ComboBoxItem)?.Content.ToString()
+                                    ?? cmbArupCsvPath.Text;
+                csvBasePath = csvBasePath.TrimEnd('\\') + "\\";
+
+                //string csvBasePath = txtArupCsvPath.Text.TrimEnd('\\') + "\\";
+                //string pngBasePath = txtArupPngPath.Text.TrimEnd('\\') + "\\";
+
+                // Save CSV
+                string csvFileName = $"Dataset_{baseName}.csv";
+                string csvFullPath = $"{csvBasePath}{csvFileName}";
+
+                AddArupLogEntry("Saving signal CSV data...");
+                _fshController.SendCommand($"MMEM:STOR:CSV:STAT 1,'{csvFullPath}'");
+                AddArupLogEntry($"Signal CSV data saved: {csvFullPath}");
+
+                // Save PNG
+                string pngFileName = $"ScreenShot_{baseName}.png";
+                string pngFullPath = $"{pngBasePath}{pngFileName}";
+
+                AddArupLogEntry("Saving signal screenshot...");
+                _fshController.SendCommand("HCOP:DEV:LANG PNG");
+                _fshController.SendCommand($"MMEM:NAME '{pngFullPath}'");
+                _fshController.SendCommand("HCOP");
+                AddArupLogEntry($"Signal screenshot saved: {pngFullPath}");
+            }
+            catch (Exception ex)
+            {
+                AddArupLogEntry($"Error saving signal data: {ex.Message}");
+            }
+        }
+
+        private void IncrementArupPositionNumber()
+        {
+            if (int.TryParse(txtArupPositionNumber.Text, out int currentNumber))
+            {
+                currentNumber++;
+                txtArupPositionNumber.Text = FormatPositionNumber(currentNumber);
+            }
+        }
+        private void btnArupCopyLog_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Clipboard.SetText(txtArupMeasurementLog.Text);
+                AddArupLogEntry("ARUP log contents copied to clipboard");
+            }
+            catch (Exception ex)
+            {
+                AddArupLogEntry($"Failed to copy ARUP log: {ex.Message}");
+            }
+        }
+
+        private void btnArupSaveLog_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                string logFilePath = $"{LogDirectory}\\ARUP_Log_{timestamp}.txt";
+                File.WriteAllText(logFilePath, txtArupMeasurementLog.Text);
+                AddArupLogEntry($"ARUP log saved to: {logFilePath}");
+            }
+            catch (Exception ex)
+            {
+                AddArupLogEntry($"Failed to save ARUP log: {ex.Message}");
+            }
+        }
+
+
+        //251014 Update ARUP Tab (End)
         private void InitializeLogging()
         {
             // Create log directory if it doesn't exist
@@ -341,12 +680,42 @@ namespace FSH_Controller
         {
             try
             {
-                File.WriteAllText(_logFilePath, _measurementLog.ToString());
+                StringBuilder completeLog = new StringBuilder();
+                completeLog.AppendLine($"Electric Field Strength Measurement Log - {DateTime.Now}");
+                completeLog.AppendLine(new string('=', 60));
+                completeLog.AppendLine(_measurementLog.ToString());
+
+                File.WriteAllText(_logFilePath, completeLog.ToString());
                 AddLogEntry($"Log saved to: {_logFilePath}");
             }
             catch (Exception ex)
             {
                 AddLogEntry($"Failed to save log: {ex.Message}");
+            }
+        }
+
+        // Add this method to save ARUP log automatically
+        private void SaveArupLogToFile()
+        {
+            try
+            {
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                string logFilePath = $"{LogDirectory}\\ARUP_AutoSave_Log_{timestamp}.txt";
+
+                // Add header to the auto-saved log
+                StringBuilder completeArupLog = new StringBuilder();
+                completeArupLog.AppendLine($"ARUP Measurement Log - Auto Saved on {DateTime.Now}");
+                completeArupLog.AppendLine(new string('=', 50));
+                completeArupLog.AppendLine(_arupMeasurementLog.ToString());
+
+                File.WriteAllText(logFilePath, completeArupLog.ToString());
+
+                // Also update the main status for visibility
+                UpdateStatus($"ARUP log auto-saved to: {logFilePath}");
+            }
+            catch (Exception ex)
+            {
+                UpdateStatus($"Failed to auto-save ARUP log: {ex.Message}");
             }
         }
 
@@ -356,6 +725,12 @@ namespace FSH_Controller
             if (_measurementLog.Length > 0)
             {
                 SaveLogToFile();
+            }
+
+            // Auto-save ARUP log
+            if (_arupMeasurementLog.Length > 0)
+            {
+                SaveArupLogToFile();
             }
         }
 
@@ -720,6 +1095,11 @@ namespace FSH_Controller
 
             try
             {
+                // Transducer settings
+                string transducerFile = (cmbTransducer.SelectedItem as ComboBoxItem)?.Content.ToString();
+                _fshController.SendCommand($"SENS:CORR:TRAN:SEL '{transducerFile}'");
+                _fshController.SendCommand($"SENS:CORR:TRAN:STAT {(chkTransducerEnabled.IsChecked == true ? "ON" : "OFF")}");
+
                 // Frequency settings
                 _fshController.SendCommand($"FREQ:CENT {txtCenterFreq.Text}");
                 _fshController.SendCommand($"FREQ:SPAN {txtSpan.Text}");
@@ -740,10 +1120,7 @@ namespace FSH_Controller
                 //string detectionMode = (cmbDetectionMode.SelectedItem as ComboBoxItem)?.Content.ToString();
                 //_fshController.SendCommand($"DET {detectionMode}");
 
-                // Transducer settings
-                string transducerFile = (cmbTransducer.SelectedItem as ComboBoxItem)?.Content.ToString();
-                _fshController.SendCommand($"SENS:CORR:TRAN:SEL '{transducerFile}'");
-                _fshController.SendCommand($"SENS:CORR:TRAN:STAT {(chkTransducerEnabled.IsChecked == true ? "ON" : "OFF")}");
+
 
                 UpdateStatus("All settings applied successfully");
             }
@@ -781,14 +1158,10 @@ namespace FSH_Controller
         {
             // Remove "GHz" if present in the input
             string cleanFreq = frequency.Replace("GHz", "").Trim();
-
-            _fshController.SendCommand($"CALC:MARK{markerNumber}:MODE POS");
-            _fshController.SendCommand($"CALC:MARK{markerNumber}:FUNC:BPOW:TYPE M");
             _fshController.SendCommand($"CALC:MARK{markerNumber}:X {cleanFreq}GHz");
 
             UpdateStatus($"Marker {markerNumber} set to {cleanFreq} GHz");
         }
-
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
