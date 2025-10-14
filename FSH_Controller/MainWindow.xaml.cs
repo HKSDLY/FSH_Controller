@@ -328,7 +328,7 @@ namespace FSH_Controller
                                     ?? cmbArupCsvPath.Text;
                 csvBasePath = csvBasePath.TrimEnd('\\') + "\\";
                 string pngBasePath = (cmbArupPngPath.SelectedItem as ComboBoxItem)?.Content.ToString()
-                                    ?? cmbArupCsvPath.Text;
+                                    ?? cmbArupPngPath.Text;
                 csvBasePath = csvBasePath.TrimEnd('\\') + "\\";
 
                 //string csvBasePath = txtArupCsvPath.Text.TrimEnd('\\') + "\\";
